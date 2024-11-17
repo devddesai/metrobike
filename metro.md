@@ -91,3 +91,8 @@ For each environmental configuration, compute the reward at the end of the day. 
 - The population function needs to be periodic over a day
 - The pathfinding algorithm should be as efficient as possible
 - The above simulation is not optimized for speed at all, we should take care to save time/memory where possible
+
+## Dev Updates
+- If we want to have visuals for this, would it not be better to somehow use a grid instead? that way we can update location for each agent. with a graph, position is arbitrary
+- Working on Data Collector right now. Needs to store current position of each agent, and the distance left
+- Added get_node and fixed initializer for agents in the mymodel for loop class
