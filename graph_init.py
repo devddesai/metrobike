@@ -4,7 +4,10 @@ import matplotlib.pyplot as plt
 
 
 def create_random_graph(nodes, max_length, prob=0.5):
-    g = nx.gnp_random_graph(nodes, prob)
+    while True:
+        g = nx.gnp_random_graph(nodes, prob)
+        if nx.is_connected(g):
+            break
     for (u,v) in g.edges():
         g.edges[u,v]['weight'] = np.random.randint(1, max_length)
     return g
