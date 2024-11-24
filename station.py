@@ -1,10 +1,10 @@
 class Station():
-
     def __init__(self, capacity, available_bikes):
         self.capacity = capacity
         self.available_bikes = available_bikes
         self.available_spots = capacity - available_bikes
         assert self.available_spots >= 0, "Station init: available_bikes > capacity"
+        assert self.capacity > 0, "Station init: capacity <= 0"
 
     def return_bike(self):
         if self.available_spots <= 0:
@@ -21,4 +21,13 @@ class Station():
         self.available_spots += 1
         assert self.available_spots+self.available_bikes == self.capacity and self.available_spots >= 0, "Station return_bike: available_spots + available_bikes != capacity, available spots>capacity"
         return True
+
+    def get_bike_availability(self):
+        return self.available_bikes > 0
+    
+    def get_spot_availability(self):
+        return self.available_spots > 0
+    
+    def __str__(self):
+        return "Station: capacity {}, available bikes {}, available spots {}".format(self.capacity, self.available_bikes, self.available_spots)
     
