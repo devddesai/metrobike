@@ -1,7 +1,7 @@
 import networkx as nx
 import numpy as np
 
-walk_multiplier = 3
+walk_multiplier = 10
 
 def get_stations(g):
     return [i for i in g.nodes if g.nodes[i]['type'] == 'station']

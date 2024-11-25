@@ -100,3 +100,24 @@ Next steps:
 - Need to introduce stations
   - Putting stations at each node?
   - In each step, check if the station has enough space. If not, iterate through the model's pathfinder algorithm to find the closest station.
+
+## TODO
+### Viren
+- Create graph of Austin
+- Probabilities to go to another destination
+
+### Dev
+- Test pathfinding algorithm
+
+### Eric
+- Simulated annealing
+  - Fix reward function
+
+### Hasith 
+- Distribution of initial bikes
+- Collecting data on
+  - Time saved walking (direct path to destination vs actual path taken)
+  - Distribution of bikes at each station
+  - How many times people get to a station and cant rent/return bike
+  - Which stations are the most popular
+- Random seed for model
