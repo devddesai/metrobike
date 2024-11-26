@@ -112,6 +112,7 @@ Next steps:
 ### Eric
 - Simulated annealing
   - Fix reward function
+- Look at particle swarm optimization
 
 ### Hasith 
 - Distribution of initial bikes
