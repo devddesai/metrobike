@@ -1,8 +1,6 @@
 import networkx as nx
 import numpy as np
 
-walk_multiplier = 10
-
 def get_stations(g):
     return [i for i in g.nodes if g.nodes[i]['type'] == 'station']
 
@@ -10,7 +8,7 @@ def get_destinations(g):
     return [i for i in g.nodes if g.nodes[i]['type'] == 'destination']
 
 # time to walk from node n1 to n2
-def walk_cost(g, n1, n2):
+def walk_cost(g, n1, n2, walk_multiplier=3):
     return g[n1][n2]['weight'] * walk_multiplier
 
 # time to bike from node n1 to n2
@@ -38,7 +36,7 @@ def all_available_spots(g, start, max_dist):
 
 # path if you are initially biking from a station to a destination
 # finds the nearest spot to the destination and bikes there
-def bike_std(g, start, end):
+def bike_std(g, start, end, walk_multiplier=3):
     assert g.nodes[start]['type'] == 'station', 'start must be a station'
     assert g.nodes[end]['type'] == 'destination', 'end must be a destination'
     assert start != end, 'start and end cannot be the same'
@@ -46,17 +44,17 @@ def bike_std(g, start, end):
 
 
     if nearest_spot(g, end) == start:
-        return end, False, walk_cost(g, start, end)
+        return end, False, walk_cost(g, start, end, walk_multiplier=walk_multiplier)
 
     all_spots = all_available_spots(g, start, g[start][end]['weight'])
 
     if len(all_spots) == 0:
-        return end, False, walk_cost(g, start, end)
+        return end, False, walk_cost(g, start, end, walk_multiplier=walk_multiplier)
 
     min_cost = float('inf')
     min_spot = None
     for spot in all_spots:
-        cost = bike_cost(g, start, spot) + walk_cost(g, spot, end)
+        cost = bike_cost(g, start, spot) + walk_cost(g, spot, end, walk_multiplier=walk_multiplier)
         if cost < min_cost:
             min_cost = cost
             min_spot = spot
@@ -67,12 +65,12 @@ def bike_std(g, start, end):
 
 # path if you are initially walking to a destination
 # compares the cost of walking to the destination and the cost of walking to the nearest bike and biking to the destination
-def walk_d(g, start, end):
+def walk_d(g, start, end, walk_multiplier=3):
     assert g.nodes[end]['type'] == 'destination', 'end must be a destination'
     assert start != end, 'start and end cannot be the same'
 
     # time to walk directly to the destination
-    direct_walk = walk_cost(g, start, end)
+    direct_walk = walk_cost(g, start, end, walk_multiplier=walk_multiplier)
 
     if g.nodes[start]['type'] == 'station' and g.nodes[start]['data'].get_bike_availability():
         return end, False, direct_walk
@@ -86,7 +84,7 @@ def walk_d(g, start, end):
     min_bike_node = None
     bike_nodes = all_available_bikes(g, start, g[start][end]['weight'])
     for bike_node in bike_nodes:
-        walk_to_nearest_bike = walk_cost(g, start, bike_node)
+        walk_to_nearest_bike = walk_cost(g, start, bike_node, walk_multiplier=walk_multiplier)
         bike_to_end = bike_std(g, bike_node, end)[2]
         tot_bike_cost = walk_to_nearest_bike + bike_to_end
         if tot_bike_cost < min_bike_cost:
@@ -102,7 +100,7 @@ def walk_d(g, start, end):
 input: graph, start node, end node, have bike boolean
 output: next node, bike there boolean, time to destination
 """
-def pathfind(g, start, end, bike):
+def pathfind(g, start, end, bike, walk_multiplier=3):
     assert g.nodes[end]['type'] == 'destination', 'end must be a destination'
     assert start != end, 'start and end cannot be the same'
     
@@ -112,8 +110,8 @@ def pathfind(g, start, end, bike):
     else:
         assert g.nodes[start]['type'] == 'station', 'start must be a station if we are biking'
         
-        walking_time = walk_d(g, start, end)[2]
-        biking_time = bike_std(g, start, end)[2]
+        walking_time = walk_d(g, start, end, walk_multiplier=walk_multiplier)[2]
+        biking_time = bike_std(g, start, end, walk_multiplier=walk_multiplier)[2]
 
         if walking_time <= biking_time:
             return walk_d(g, start, end)

@@ -3,12 +3,52 @@ import numpy as np
 import station as st
 
 def square_vertices(s):
+    """
+    returns the vertices of a square centered at the origin. The square has dimensions (2s)x(2s)
+
+    Parameters
+    ---
+    s: int
+        scaling factor for the square
+
+    Returns
+    ---
+    vertices: numpy array
+        4x2 numpy array of vertices that make up a scaled 2x2 square. The vertices are ordered in a counter clockwise fashion starting from the top right vertex.
+    """
     return np.array([[s, s], [-s, s], [-s, -s], [s, -s]])
 
 def int_vertices(s):
+    """ 
+    returns the vertices of a rectangle centered at the origin. The rectangle has dimensions (8s)x(6s)
+    
+    Parameters
+    ---
+    s: int
+        scaling factor for the rectangle
+
+    Returns
+    ---
+    vertices: numpy array
+        4x2 numpy array of vertices that make up a scaled 8x6 rectangle. The vertices are ordered in a counter clockwise fashion starting from the top right vertex.
+    """
     return np.array([[3*s, 4*s], [-3*s, 4*s], [-3*s, -4*s], [3*s, -4*s]])
 
 def basic_graph():
+    """
+    returns a basic graph with 4 stations and 4 destinations. Both stations and destinations are located at the vertices of a rectange centered at the origin. The station rectangle has dimensions 6x8 and the destination rectangle has dimensions 12x16. The first four nodes are the stations while the last four are destinations
+
+    Parameters
+    ---
+    None
+
+    Returns
+    ---
+    G: networkx graph
+        graph with 8 nodes and 16 edges
+    total_nodes: numpy array
+        8x2 array of vertex locations. The first four are stations and the last four are destinations.
+    """
     stations = int_vertices(1)
     destinations = int_vertices(2)
 
@@ -27,7 +67,7 @@ def basic_graph():
     for i in range(n_stations):
         G.add_node(i)
         G.nodes[i]['type'] = 'station'
-        G.nodes[i]['data'] = st.Station(5, np.random.randint(0,6))
+        G.nodes[i]['data'] = st.Station(5, 3)
     for i in range(n_stations, n_stations+n_destinations):
         G.add_node(i)
         G.nodes[i]['type'] = 'destination'
@@ -42,4 +82,16 @@ def basic_graph():
     return G, total_nodes
 
 def basic_weights():
+    """
+    returns a basic weight vector for the basic graph. The weight vector is uniform
+
+    Parameters:
+    ---
+    None
+
+    Returns:
+    ---
+    weights: numpy array
+        4x1 numpy array of weights to sample each destination with
+    """
     return np.array([1, 1, 1, 1])/4

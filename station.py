@@ -27,6 +27,12 @@ class Station():
     
     def get_spot_availability(self):
         return self.available_spots > 0
+
+    def assign_bikes(self, num_bikes):
+        self.available_bikes = num_bikes
+        self.available_spots = self.capacity - num_bikes
+        assert self.available_spots >= 0, "Station assign_bikes: available_spots < 0"
+        assert num_bikes >= 0, "Station assign_bikes: num_bikes assigned to station must be non-negative"
     
     def __str__(self):
         return "Station: capacity {}, available bikes {}, available spots {}".format(self.capacity, self.available_bikes, self.available_spots)
