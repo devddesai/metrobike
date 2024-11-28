@@ -42,7 +42,7 @@ class PSO():
         coordinatelist = dict()
         coordinatelist['destination'] = citymap[2:]
         def new_fitness(swarm):
-            coordinatelist['station'] = swarm
+            coordinatelist['station'] = [(swarm[i], swarm[i+1]) for i in range(0, len(swarm), 2)]
             return fitness(coordinatelist)
         return minval, maxval, new_fitness
     
