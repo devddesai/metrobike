@@ -47,13 +47,13 @@ def basic_graph():
     G: networkx graph
         graph with 8 nodes and 16 edges
     total_nodes: numpy array
-        8x2 array of vertex locations. The first four are stations and the last four are destinations.
+        8x2 array of vertex locations. The first four are stations an`d the last four are destinations.
     """
     stations = int_vertices(1)
     destinations = int_vertices(2)
 
     n_stations = stations.shape[0]
-    n_destinations = destinations.shape[0] 
+    n_destinations = destinations.shape[0]
 
     total_nodes = np.concatenate((stations, destinations), axis=0)
     distances = np.zeros((total_nodes.shape[0], total_nodes.shape[0]))
