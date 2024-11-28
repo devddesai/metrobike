@@ -67,7 +67,7 @@ def basic_graph():
     for i in range(n_stations):
         G.add_node(i)
         G.nodes[i]['type'] = 'station'
-        G.nodes[i]['data'] = st.Station(5, 3)
+        G.nodes[i]['data'] = st.Station(5, 1)
     for i in range(n_stations, n_stations+n_destinations):
         G.add_node(i)
         G.nodes[i]['type'] = 'destination'
