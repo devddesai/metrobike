@@ -3,6 +3,7 @@ class Station():
         self.capacity = capacity
         self.available_bikes = available_bikes
         self.available_spots = capacity - available_bikes
+        self.popularity = 0
         assert self.available_spots >= 0, "Station init: available_bikes > capacity"
         assert self.capacity > 0, "Station init: capacity <= 0"
 
