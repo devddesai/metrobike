@@ -94,7 +94,7 @@ def walk_d(g, start, end, walk_multiplier=3):
     if direct_walk <= min_bike_cost:
         return end, False, direct_walk
     else:
-        return min_bike_node, True, min_bike_cost
+        return min_bike_node, False, min_bike_cost
 
 """
 input: graph, start node, end node, have bike boolean
