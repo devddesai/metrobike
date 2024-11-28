@@ -7,6 +7,9 @@ def get_stations(g):
 def get_destinations(g):
     return [i for i in g.nodes if g.nodes[i]['type'] == 'destination']
 
+def get_nearest_station(g, n):
+    return min([i for i in g.nodes if g.nodes[i]['type'] == 'station'], key=lambda i: g[n][i]['weight'])
+
 # time to walk from node n1 to n2
 def walk_cost(g, n1, n2, walk_multiplier=3):
     return g[n1][n2]['weight'] * walk_multiplier
@@ -42,13 +45,12 @@ def bike_std(g, start, end, walk_multiplier=3):
     assert start != end, 'start and end cannot be the same'
     assert g.nodes[start]['data'].get_bike_availability(), 'bike must be available at the start station'
 
-
-    if nearest_spot(g, end) == start:
-        return end, False, walk_cost(g, start, end, walk_multiplier=walk_multiplier)
-
-    all_spots = all_available_spots(g, start, g[start][end]['weight'])
+    all_spots = all_available_spots(g, start, np.inf)
 
     if len(all_spots) == 0:
+        return get_nearest_station(g, end), True, np.inf
+        # return end, False, walk_cost(g, start, end, walk_multiplier=walk_multiplier)
+    if nearest_spot(g, end) == start:
         return end, False, walk_cost(g, start, end, walk_multiplier=walk_multiplier)
 
     min_cost = float('inf')
