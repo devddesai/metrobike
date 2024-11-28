@@ -18,16 +18,33 @@ class PSO():
     
     
     def __init__(self, citymap, fitness, w, c1, c2):
+        """Args:
+            citymap (list) : A list of coordinates (tuples). The first two should be the minimum and maximum corners of the search space.
+                             The rest should be coordinates of the destination nodes.
+            fitness (function) : The fitness function to be optimized. The function should take a dictionary of coordinates with the key being the type of node
+                                 and value being a list of the coordinates of the nodes, and return a float (time saved)
+            w (float) : The inertia weight.
+            c1 (float) : The cognitive parameter.
+            c2 (float) : The social parameter.
+        
+        """
+
         self.minval, self.maxval, self.fitness = self.unpacker(citymap, fitness)
         self.w = w
         self.c1 = c1
         self.c2 = c2
 
     def unpacker(self, citymap, fitness):
-        # NYI - Returns the range of coordinates available on the map and the fitness function
-        minval = 0
-        maxval = 0
-        return minval, maxval, fitness
+        x1, y1 = citymap[0]
+        x2, y2 = citymap[1]
+        minval = min(x1,y1)
+        maxval = max(x2,y2)
+        coordinatelist = dict()
+        coordinatelist['destination'] = citymap[2:]
+        def new_fitness(swarm):
+            coordinatelist['station'] = swarm
+            return fitness(coordinatelist)
+        return minval, maxval, new_fitness
     
     def initswarm(self, num_particles, num_dimensions):
         return np.random.uniform(self.minval, self.maxval, (num_particles, num_dimensions))
