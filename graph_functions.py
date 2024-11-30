@@ -55,7 +55,7 @@ def create_graph_from_coordinates(stations_coords, destinations_coords):
 
     #add destination nodes
     for i, coord in enumerate(destinations_coords):
-        G.add_node(f"Destination {i+1}", pos=(coord[1], coord[0]), type='end_destination', data=None)
+        G.add_node(f"Destination {i+1}", pos=(coord[1], coord[0]), type='destination', data=None)
 
     #add edges
     all_nodes = list(G.nodes)
@@ -72,11 +72,11 @@ def create_graph_from_coordinates(stations_coords, destinations_coords):
     plt.title("NetworkX Graph of Stations and End Destinations")
     plt.show()
 
-    #create dicts for station+nodes and end_destination_nodes
+    #create dicts for station+nodes and destination_nodes
     station_nodes = {node: data for node, data in G.nodes(data=True) if data['type'] == 'station'}
-    end_destination_nodes = {node: data for node, data in G.nodes(data=True) if data['type'] == 'end_destination'}
+    destination_nodes = {node: data for node, data in G.nodes(data=True) if data['type'] == 'destination'}
 
-    return G, station_nodes, end_destination_nodes
+    return G, station_nodes, destination_nodes
 
 #FUNC 2
 
@@ -113,7 +113,7 @@ def create_graph_from_stations(stations_coords):
 
     #add destination nodes
     for i, coord in enumerate(destinations_coords):
-        G.add_node(f"Destination {i+1}", pos=(coord[1], coord[0]), type='end_destination', data=None)
+        G.add_node(f"Destination {i+1}", pos=(coord[1], coord[0]), type='destination', data=None)
 
     #add edges
     all_nodes = list(G.nodes)
@@ -130,8 +130,8 @@ def create_graph_from_stations(stations_coords):
     plt.title("NetworkX Graph of Stations and End Destinations")
     plt.show()
 
-    #create dicts for station+nodes and end_destination_nodes
+    #create dicts for station+nodes and destination_nodes
     station_nodes = {node: data for node, data in G.nodes(data=True) if data['type'] == 'station'}
-    end_destination_nodes = {node: data for node, data in G.nodes(data=True) if data['type'] == 'end_destination'}
+    destination_nodes = {node: data for node, data in G.nodes(data=True) if data['type'] == 'destination'}
 
-    return G, station_nodes, end_destination_nodes
+    return G, station_nodes, destination_nodes

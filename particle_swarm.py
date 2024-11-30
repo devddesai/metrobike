@@ -50,6 +50,7 @@ class PSO():
         return np.random.uniform(self.minval, self.maxval, (num_particles, num_dimensions))
     
     def optimize(self, num_particles, num_dimensions, num_iterations):
+        num_dimensions*=2
         swarm = self.initswarm(num_particles, num_dimensions)
         velocities = np.zeros((num_particles, num_dimensions))
         best_positions = swarm.copy()
