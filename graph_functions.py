@@ -153,14 +153,15 @@ def create_graph_from_coordinates(stations_coords, destinations_coords):
         for j in range(i + 1, len(all_nodes)):
             G.add_edge(all_nodes[i], all_nodes[j], weight=distances[i, j])
 
-    #positions of nodes
-    pos = nx.get_node_attributes(G, 'pos')
+    # positions of nodes
+    # pos = nx.get_node_attributes(G, 'pos')
 
-    node_colors = ['lightblue' if G.nodes[node]['type'] == 'station' else 'red' for node in G.nodes]
-    plt.figure(figsize=(10, 8))
-    nx.draw(G, pos, with_labels=True, node_size=500, node_color=node_colors)
-    plt.title("NetworkX Graph of Stations and End Destinations")
-    plt.show()
+    # node_colors = ['lightblue' if G.nodes[node]['type'] == 'station' else 'red' for node in G.nodes]
+
+    # plt.figure(figsize=(10, 8))
+    # nx.draw(G, pos, with_labels=True, node_size=500, node_color=node_colors)
+    # plt.title("NetworkX Graph of Stations and End Destinations")
+    # plt.show()
 
     #create dicts for station+nodes and destination_nodes
     station_nodes = {node: data for node, data in G.nodes(data=True) if data['type'] == 'station'}

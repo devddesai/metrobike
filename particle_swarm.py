@@ -35,6 +35,15 @@ class PSO():
         self.c2 = c2
 
     def unpacker(self, citymap, fitness):
+        """
+        Formats the citymap and fitness function to be compatible with the PSO algorithm.
+
+        Args:
+            citymap (list) : A list of coordinates (tuples). The first two should be the minimum and maximum corners of the search space.
+                             The rest should be coordinates of the destination nodes.
+            fitness (function) : The fitness function to be optimized. The function should take a dictionary of coordinates with the key being the type of node
+                                 and value being a list of the coordinates of the nodes, and return a float (time saved)
+        """
         x1, y1 = citymap[0]
         x2, y2 = citymap[1]
         minval = min(x1,y1)
@@ -47,12 +56,27 @@ class PSO():
         return minval, maxval, new_fitness
     
     def initswarm(self, num_particles, num_dimensions):
+        """
+        Initializes the swarm with random positions.
+
+        Args:
+            num_particles (int) : The number of particles in the swarm.
+            num_dimensions (int) : The number of dimensions of the search space.
+        """
         return np.random.uniform(self.minval, self.maxval, (num_particles, num_dimensions))
     
     def optimize(self, num_particles, num_dimensions, num_iterations):
+        """
+        Optimizes the fitness function using the PSO algorithm.
+
+        Args:
+            num_particles (int) : The number of particles in the swarm.
+            num_dimensions (int) : The number of dimensions of the search space.
+            num_iterations (int) : The number of iterations the algorithm should run.
+        """
         num_dimensions*=2
         swarm = self.initswarm(num_particles, num_dimensions)
-        velocities = np.zeros((num_particles, num_dimensions))
+        velocities = np.random.uniform(-(self.maxval-self.minval)*0.1, (self.maxval-self.minval)*0.1, (num_particles, num_dimensions))
         best_positions = swarm.copy()
         best_fitness = np.array([self.fitness(p) for p in swarm])
         best_global_position = best_positions[np.argmin(best_fitness)]
