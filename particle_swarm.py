@@ -1,4 +1,5 @@
 import numpy as np
+from tqdm.notebook import tqdm
 
 class PSO():
     """Particle Swarm Optimization
@@ -65,7 +66,7 @@ class PSO():
         """
         return np.random.uniform(self.minval, self.maxval, (num_particles, num_dimensions))
     
-    def optimize(self, num_particles, num_dimensions, num_iterations):
+    def optimize(self, num_particles, num_dimensions, num_iterations, progress = True):
         """
         Optimizes the fitness function using the PSO algorithm.
 
@@ -82,7 +83,7 @@ class PSO():
         best_global_position = best_positions[np.argmin(best_fitness)]
         best_global_fitness = np.min(best_fitness)
         
-        for _ in range(num_iterations):
+        for j in tqdm(range(num_iterations), disable = not(progress)):
             for i in range(num_particles):
                 r1 = np.random.uniform(0, 1)
                 r2 = np.random.uniform(0, 1)
@@ -95,4 +96,7 @@ class PSO():
                     if fitness < best_global_fitness:
                         best_global_position = swarm[i]
                         best_global_fitness = fitness
+            if j % 10 == 0 and progress:
+                print(f"Iteration {j}: Best fitness: {best_global_fitness}")
+
         return best_global_position, best_global_fitness
