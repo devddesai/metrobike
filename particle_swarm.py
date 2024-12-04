@@ -195,7 +195,7 @@ class PSO():
             swarm_fitness = np.array([self.fitness(p) for p in swarm])
             swarm = swarm[np.argsort(swarm_fitness)]
 
-            if swarm_fitness[0] < best_global_fitness:
+            if np.min(swarm_fitness) < best_global_fitness:
                 best_global_position = swarm[0]
                 best_global_fitness = swarm_fitness[0]
 
