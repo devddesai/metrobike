@@ -1,4 +1,12 @@
 #imports
+from mesa import Model
+from mesa.space import NetworkGrid
+from mesa.datacollection import DataCollector
+import network_example as ne
+import numpy as np
+import pathfinding as pf
+import commuter as cm
+
 
 class MyModel(Model):
     def __init__(self, n_agents, seed=None, G=ne.basic_graph()[0]):
@@ -40,7 +48,7 @@ class MyModel(Model):
             intermediate_node = path[0]
             distance_left = self.grid.G[node_id][intermediate_node]['weight'] * self.walking_multiplier
 
-            commuter = Commuter(self, current_pos=node_id, distance_left=distance_left, intermediate_node=intermediate_node, destination=destination_node)
+            commuter = cm.Commuter(self, current_pos=node_id, distance_left=distance_left, intermediate_node=intermediate_node, destination=destination_node)
 
             self.grid.place_agent(commuter, node_id)
             

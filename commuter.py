@@ -1,5 +1,6 @@
 #imports
-
+from mesa import Agent
+import pathfinding as pf
 
 class Commuter(Agent):
 
