@@ -32,7 +32,7 @@ def nearest_bike(g, n):
 
 # find the nearest station with a spot to park a bike to node n
 def nearest_spot(g, n, start):
-    all_spots = [i for i in g.nodes if g.nodes[i]['type'] == 'station' and g.nodes[i]['data'].get_spot_availability() and i != start]
+    all_spots = [i for i in g.nodes if g.nodes[i]['type'] == 'station' and g.nodes[i]['data'].get_spot_availability()]
     if len(all_spots) == 0:
         return None
     
@@ -54,6 +54,7 @@ def bike_std(g, start, end, walk_multiplier=3):
     assert g.nodes[start]['data'].get_bike_availability(), 'bike must be available at the start station'
 
     # all_spots = all_available_spots(g, start, np.inf)
+    # all_spots = all_available_spots(g, start, np.inf)
 
     # if len(all_spots) == 0:
     #     return get_nearest_station(g, end), True, np.inf
@@ -72,7 +73,7 @@ def bike_std(g, start, end, walk_multiplier=3):
 
     spot = nearest_spot(g, end, start)
     if spot == None:
-        return get_nearest_station(g, end), True, np.inf
+        return end, False, walk_cost(g, start, end, walk_multiplier=walk_multiplier)
     
     return spot, True, bike_cost(g, start, spot) + walk_cost(g, spot, end, walk_multiplier=walk_multiplier)
     # return nearest_spot(g, end), True, bike_cost(g, start, nearest_spot(g, end)) + walk_cost(g, nearest_spot(g, end), end)
@@ -107,16 +108,16 @@ def walk_d(g, start, end, walk_multiplier=3):
     #         min_bike_cost = tot_bike_cost
     #         min_bike_node = bike_node
 
-    min_bike_node = nearest_bike(g, end)
-    if min_bike_node == None:
+    bike_node = nearest_bike(g, start)
+    if bike_node == None:
         return end, False, direct_walk
     
-    min_bike_cost = walk_cost(g, start, min_bike_node, walk_multiplier=walk_multiplier) + bike_std(g, min_bike_node, end)[2]
+    bike_cost = walk_cost(g, start, bike_node, walk_multiplier=walk_multiplier) + bike_std(g, bike_node, end)[2]
 
-    if direct_walk <= min_bike_cost:
+    if direct_walk <= bike_cost:
         return end, False, direct_walk
     else:
-        return min_bike_node, False, min_bike_cost
+        return bike_node, False, bike_cost
 
 """
 input: graph, start node, end node, have bike boolean

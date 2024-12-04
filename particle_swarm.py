@@ -39,11 +39,18 @@ class PSO():
         """
         Formats the citymap and fitness function to be compatible with the PSO algorithm.
 
-        Args:
+        Args
+        ---
             citymap (list) : A list of coordinates (tuples). The first two should be the minimum and maximum corners of the search space.
                              The rest should be coordinates of the destination nodes.
             fitness (function) : The fitness function to be optimized. The function should take a dictionary of coordinates with the key being the type of node
                                  and value being a list of the coordinates of the nodes, and return a float (time saved)
+
+        Returns
+        ---
+            minval (float) : The minimum value of the search space.
+            maxval (float) : The maximum value of the search space.
+            new_fitness (function) : The fitness function to be optimized. The function should take a list of coordinates and return a float (time saved)
         """
         x1, y1 = citymap[0]
         x2, y2 = citymap[1]
@@ -60,9 +67,14 @@ class PSO():
         """
         Initializes the swarm with random positions.
 
-        Args:
+        Args
+        ---
             num_particles (int) : The number of particles in the swarm.
             num_dimensions (int) : The number of dimensions of the search space.
+
+        Returns
+        ---
+            swarm (numpy array) : A numpy array of shape (num_particles, num_dimensions) with random positions.
         """
         return np.random.uniform(self.minval, self.maxval, (num_particles, num_dimensions))
     
@@ -70,10 +82,16 @@ class PSO():
         """
         Optimizes the fitness function using the PSO algorithm.
 
-        Args:
+        Args
+        ---
             num_particles (int) : The number of particles in the swarm.
             num_dimensions (int) : The number of dimensions of the search space.
             num_iterations (int) : The number of iterations the algorithm should run.
+
+        Returns
+        ---
+            best_global_position (numpy array) : The best position found by the algorithm.
+            best_global_fitness (float) : The fitness value of the best position found by the algorithm.
         """
         num_dimensions*=2
         swarm = self.initswarm(num_particles, num_dimensions)
@@ -96,6 +114,91 @@ class PSO():
                     if fitness < best_global_fitness:
                         best_global_position = swarm[i]
                         best_global_fitness = fitness
+            if j % 10 == 0 and progress:
+                print(f"Iteration {j}: Best fitness: {best_global_fitness}")
+
+        return best_global_position, best_global_fitness
+    
+    def crossover(self, parent1, parent2, num_dimensions, n):
+        """
+        Combines the positions of two parents to create a child.
+
+        Args
+        ---
+            parent1 (numpy array) : The position of the first parent.
+            parent2 (numpy array) : The position of the second parent.
+            num_dimensions (int) : The number of dimensions of the search space.
+            n (int) : The number of children to create.
+
+        Returns
+        ---
+            children (numpy array) : A numpy array of shape (n, num_dimensions) with the positions of the children.
+        """
+        children = np.zeros((n, num_dimensions))
+        for i in range(n):
+            mask = np.random.randint(0, 2, num_dimensions)
+            children[i] = parent1 * mask + parent2 * (1 - mask)
+        return children
+    
+    def mutate(self, children, mutation_rate, alpha=0.1):
+        """
+        Mutates the positions of the children.
+
+        Args
+        ---
+            children (numpy array) : A numpy array of shape (n, num_dimensions) with the positions of the children.
+            mutation_rate (float) : The probability of a mutation occuring.
+            alpha (float) : The mutation scalar.
+
+        Returns
+        ---
+            children (numpy array) : A numpy array of shape (n, num_dimensions) with the positions of the mutated
+        """
+        mutation_range = self.maxval - self.minval
+        for i in range(children.shape[0]):
+            for j in range(children.shape[1]):
+                if np.random.uniform(0, 1) < mutation_rate:
+                    children[i, j] += np.random.uniform(-mutation_range, mutation_range) * alpha
+        return children
+
+    def optimize_genetic(self, num_particles, num_dimensions, num_iterations, progress = True):
+        """
+        Optimizes the fitness function using the genetic algorithm.
+
+        Args
+        ---
+            num_particles (int) : The number of particles in the swarm.
+            num_dimensions (int) : The number of dimensions of the search space.
+            num_iterations (int) : The number of iterations the algorithm should run.
+
+        Returns
+        ---
+            best_global_position (numpy array) : The best position found by the algorithm.
+            best_global_fitness (float) : The fitness value of the best position found by the algorithm.
+        """
+        num_dimensions*=2
+        swarm = self.initswarm(num_particles, num_dimensions)
+        
+        swarm_fitness = np.array([self.fitness(p) for p in swarm])
+        swarm = swarm[np.argsort(swarm_fitness)]
+        
+        best_global_position = swarm[np.argmin(swarm_fitness)]
+        best_global_fitness = np.min(swarm_fitness)
+        
+        for j in tqdm(range(num_iterations), disable = not(progress)):
+            # create children of the best parents
+            children = self.crossover(swarm[0], swarm[1], num_dimensions, num_particles)
+            # mutate the children
+            children = self.mutate(children, 0.1)
+            swarm[2:] = children
+
+            swarm_fitness = np.array([self.fitness(p) for p in swarm])
+            swarm = swarm[np.argsort(swarm_fitness)]
+
+            if swarm_fitness[0] < best_global_fitness:
+                best_global_position = swarm[0]
+                best_global_fitness = swarm_fitness[0]
+
             if j % 10 == 0 and progress:
                 print(f"Iteration {j}: Best fitness: {best_global_fitness}")
 
