@@ -9,7 +9,7 @@ import commuter as cm
 
 
 class MyModel(Model):
-    def __init__(self, n_agents, seed=None, G=ne.basic_graph()[0]):
+    def __init__(self, n_agents, seed=None, G=ne.basic_graph()[0], weights = ne.basic_weights()):
         # Initialize the model, set up random seeds for mesa and numpy
         super().__init__(seed=seed)
         self.rng = np.random.default_rng(seed)
@@ -38,7 +38,7 @@ class MyModel(Model):
         self.destinations = pf.get_destinations(self.grid.G)
 
         # destination weights for sampling
-        self.destination_w = ne.basic_weights()
+        self.destination_w = weights
 
         # Create agents and place them on the grid
         for i in range(1, n_agents + 1):
@@ -92,7 +92,7 @@ class MyModel(Model):
             The destination node index
         """
         while True:
-            destination = self.rng.choice(self.destinations, p=ne.basic_weights())
+            destination = self.rng.choice(self.destinations, p=self.destination_w)
             if destination != current_pos:
                 return destination
             
