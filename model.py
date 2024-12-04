@@ -9,7 +9,7 @@ import commuter as cm
 
 
 class MyModel(Model):
-    def __init__(self, n_agents, seed=None, G=ne.basic_graph()[0], weights = ne.basic_weights()):
+    def __init__(self, n_agents, seed=None, G=ne.basic_graph()[0], weights = ne.basic_weights(), bike_init=None):
         # Initialize the model, set up random seeds for mesa and numpy
         super().__init__(seed=seed)
         self.rng = np.random.default_rng(seed)
@@ -18,6 +18,13 @@ class MyModel(Model):
         g = G
         self.walking_multiplier = 10
         self.grid = NetworkGrid(g)
+
+        # storing all stations and destination node indices
+        self.stations = pf.get_stations(self.grid.G)
+        self.destinations = pf.get_destinations(self.grid.G)
+
+        if bike_init is not None:
+            self.assign_bikes(bike_init)
         
         # data collector
         self.datacollector = DataCollector(
@@ -32,10 +39,6 @@ class MyModel(Model):
                              "Biking": lambda agent: agent.bike_boolean(),
                              "Park Failures": lambda agent: agent.park_failure(),
                              })
-        
-        # storing all stations and destination node indices
-        self.stations = pf.get_stations(self.grid.G)
-        self.destinations = pf.get_destinations(self.grid.G)
 
         # destination weights for sampling
         self.destination_w = weights
