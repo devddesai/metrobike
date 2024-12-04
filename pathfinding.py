@@ -24,11 +24,14 @@ def nearest_bike(g, n):
     if g.nodes[n]['type'] == 'station':
         assert not g.nodes[n]['data'].get_bike_availability(), 'bike should not be available at the current station for this function to be called'
 
+    bike_nodes = [i for i in g.nodes if g.nodes[i]['type'] == 'station' and g.nodes[i]['data'].get_bike_availability()]
+    if len(bike_nodes) == 0:
+        return None
     return min([i for i in g.nodes if g.nodes[i]['type'] == 'station' and g.nodes[i]['data'].get_bike_availability()], key=lambda i: g[n][i]['weight'])
 
-# find the nearest station with a spot to park a bike to node n
+# find the nearest station with a spot to park a bike to node n, excluding the current station
 def nearest_spot(g, n):
-    return min([i for i in g.nodes if g.nodes[i]['type'] == 'station' and g.nodes[i]['data'].get_spot_availability()], key=lambda i: g[n][i]['weight'])
+    return min([i for i in g.nodes if g.nodes[i]['type'] == 'station' and g.nodes[i]['data'].get_spot_availability() and i != n], key=lambda i: g[n][i]['weight'])
 
 # find all stations within max_dist of node start
 def all_available_bikes(g, start, max_dist):
@@ -45,24 +48,24 @@ def bike_std(g, start, end, walk_multiplier=3):
     assert start != end, 'start and end cannot be the same'
     assert g.nodes[start]['data'].get_bike_availability(), 'bike must be available at the start station'
 
-    all_spots = all_available_spots(g, start, np.inf)
+    # all_spots = all_available_spots(g, start, np.inf)
 
-    if len(all_spots) == 0:
-        return get_nearest_station(g, end), True, np.inf
-        # return end, False, walk_cost(g, start, end, walk_multiplier=walk_multiplier)
-    if nearest_spot(g, end) == start:
-        return end, False, walk_cost(g, start, end, walk_multiplier=walk_multiplier)
+    # if len(all_spots) == 0:
+    #     return get_nearest_station(g, end), True, np.inf
+    #     # return end, False, walk_cost(g, start, end, walk_multiplier=walk_multiplier)
+    # if nearest_spot(g, end) == start:
+    #     return end, False, walk_cost(g, start, end, walk_multiplier=walk_multiplier)
 
-    min_cost = float('inf')
-    min_spot = None
-    for spot in all_spots:
-        cost = bike_cost(g, start, spot) + walk_cost(g, spot, end, walk_multiplier=walk_multiplier)
-        if cost < min_cost:
-            min_cost = cost
-            min_spot = spot
+    # min_cost = float('inf')
+    # min_spot = None
+    # for spot in all_spots:
+    #     cost = bike_cost(g, start, spot) + walk_cost(g, spot, end, walk_multiplier=walk_multiplier)
+    #     if cost < min_cost:
+    #         min_cost = cost
+    #         min_spot = spot
 
-    # return nearest_spot(g, end), True, bike_cost(g, start, nearest_spot(g, end)) + walk_cost(g, nearest_spot(g, end), end)
-    return min_spot, True, min_cost
+    return nearest_spot(g, end), True, bike_cost(g, start, nearest_spot(g, end)) + walk_cost(g, nearest_spot(g, end), end)
+    # return min_spot, True, min_cost
 
 
 # path if you are initially walking to a destination
@@ -77,21 +80,26 @@ def walk_d(g, start, end, walk_multiplier=3):
     if g.nodes[start]['type'] == 'station' and g.nodes[start]['data'].get_bike_availability():
         return end, False, direct_walk
     
-    # time to walk to the nearest bike, bike to the destination
-    # bike_node = nearest_bike(g, start)
-    # walk_to_nearest_bike = walk_cost(g, start, bike_node)
-    # bike_to_end = bike_std(g, bike_node, end)[2]
-    # tot_bike_cost = walk_to_nearest_bike + bike_to_end
     min_bike_cost = float('inf')
     min_bike_node = None
-    bike_nodes = all_available_bikes(g, start, g[start][end]['weight'])
-    for bike_node in bike_nodes:
-        walk_to_nearest_bike = walk_cost(g, start, bike_node, walk_multiplier=walk_multiplier)
-        bike_to_end = bike_std(g, bike_node, end)[2]
-        tot_bike_cost = walk_to_nearest_bike + bike_to_end
-        if tot_bike_cost < min_bike_cost:
-            min_bike_cost = tot_bike_cost
-            min_bike_node = bike_node
+
+    # bike_nodes = all_available_bikes(g, start, g[start][end]['weight'])
+    # for bike_node in bike_nodes:
+    #     walk_to_nearest_bike = walk_cost(g, start, bike_node, walk_multiplier=walk_multiplier)
+    #     bike_to_end = bike_std(g, bike_node, end)[2]
+    #     tot_bike_cost = walk_to_nearest_bike + bike_to_end
+    #     if tot_bike_cost < min_bike_cost:
+    #         min_bike_cost = tot_bike_cost
+    #         min_bike_node = bike_node
+
+    min_bike_node = nearest_bike(g, start)
+    if min_bike_node is None:
+        return end, False, direct_walk
+    
+    walk_to_nearest_bike = walk_cost(g, start, min_bike_node, walk_multiplier=walk_multiplier)
+    bike_to_end = bike_std(g, min_bike_node, end)[2]
+    min_bike_cost = walk_to_nearest_bike + bike_to_end
+
 
     if direct_walk <= min_bike_cost:
         return end, False, direct_walk
