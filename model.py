@@ -16,7 +16,7 @@ class MyModel(Model):
 
         # graph initialization and time multiplier for walking
         g = G
-        self.walking_multiplier = 10
+        self.walking_multiplier = 3
         self.grid = NetworkGrid(g)
 
         # storing all stations and destination node indices
