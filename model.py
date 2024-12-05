@@ -39,6 +39,7 @@ class MyModel(Model):
                              "All Station Capacity": lambda agent: agent.get_all_station_info(),
                              "Biking": lambda agent: agent.bike_boolean(),
                              "Park Failures": lambda agent: agent.park_failure(),
+                             "Trips": lambda agent: agent.num_trips
                              })
 
         # destination weights for sampling
