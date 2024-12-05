@@ -9,7 +9,7 @@ import commuter as cm
 
 
 class MyModel(Model):
-    def __init__(self, n_agents, seed=None, G=ne.basic_graph()[0], weights = ne.basic_weights(), bike_init=None):
+    def __init__(self, n_agents, seed=None, G=ne.basic_graph()[0], destination_pos=ne.basic_graph()[1][4:], weights = ne.basic_weights(), bike_init=None):
         # Initialize the model, set up random seeds for mesa and numpy
         super().__init__(seed=seed)
         self.rng = np.random.default_rng(seed)
@@ -22,6 +22,7 @@ class MyModel(Model):
         # storing all stations and destination node indices
         self.stations = pf.get_stations(self.grid.G)
         self.destinations = pf.get_destinations(self.grid.G)
+        self.destination_pos = destination_pos
 
         if bike_init is not None:
             self.assign_bikes(bike_init)
