@@ -12,6 +12,8 @@ class Commuter(Agent):
         self.current_pos = current_pos # The agent's current position
         self.biking = False # Whether the agent is currently biking
         self.stopwatch = 0 # The agent's stopwatch, used to measure time spent completing a trip
+        self.walking_watch = 0
+        self.num_trips = 0
         self.walking_time = pf.walk_cost(self.model.grid.G, self.current_pos, self.destination, walk_multiplier=self.model.walking_multiplier) # The time it takes to walk to the destination directly from the initial destination
         self.time_saved = [[self.walking_time]] # List of lists, where each list contains the time needed to walk directly, and time actually spent walking/biking
         self.park_failures = 0 # Number of times the agent has failed to park a bike bc no spots were available
@@ -22,6 +24,8 @@ class Commuter(Agent):
         # update the agent's position and stopwatch for current trip
         self.current_pos = self.model.get_node(self)
         self.stopwatch += 1
+        if self.biking:
+            self.walking_watch += 1
 
         # If the agent has reached the intermediate node, set new start node
         if self.distance_left <= 0:
@@ -45,6 +49,7 @@ class Commuter(Agent):
                 self.destination = self.model.sample_destination(self.current_pos)
                 self.walking_time = pf.walk_cost(self.model.grid.G, self.current_pos, self.destination, walk_multiplier=self.model.walking_multiplier)
                 self.time_saved.append([self.walking_time])
+                self.num_trips += 1
             elif not(self.biking) and self.model.grid.G.nodes[self.current_pos]['type'] == 'station' and self.model.grid.G.nodes[self.current_pos]['data'].get_bike_availability():
                 # self.model.grid.G.nodes[self.current_pos]['data'].rent_bike()
                 # self.biking = True
@@ -121,3 +126,6 @@ class Commuter(Agent):
     
     def park_failure(self):
         return self.park_failures
+
+    def get_average_walking(self):
+        return -self.num_trips

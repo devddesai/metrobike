@@ -47,7 +47,7 @@ class MyModel(Model):
         for i in range(1, n_agents + 1):
             node_id = self.random.choice(self.destinations)
             destination_node = self.sample_destination(node_id)
-            print(node_id, destination_node)
+            # print(node_id, destination_node)
             path = pf.pathfind(self.grid.G, node_id, destination_node, False, walk_multiplier=self.walking_multiplier)
             intermediate_node = path[0]
             distance_left = self.grid.G[node_id][intermediate_node]['weight'] * self.walking_multiplier
@@ -144,3 +144,9 @@ class MyModel(Model):
                     totalwalk += x[0]
                     realtime += x[1]
         return totalwalk, realtime, realtime/totalwalk
+    
+    def walking_average(self):
+        avg = 0
+        for agent in self.agents:
+            avg += agent.get_average_walking()
+        return avg/len(self.agents)
