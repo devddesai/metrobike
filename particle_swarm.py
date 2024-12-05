@@ -78,6 +78,28 @@ class PSO():
         """
         return np.random.uniform(self.minval, self.maxval, (num_particles, num_dimensions))
     
+    def init_web_swarm(self, num_particles, num_dimensions, destinations):
+        """
+        Initializes the swarm such that every station is placed in between two random destinations
+
+        Args
+        ---
+            num_particles (int) : The number of particles in the swarm.
+            num_dimensions (int) : The number of dimensions of the search space.
+            destinations (numpy array) : A numpy array of shape (num_destinations, 2) with the positions of the destinations.
+
+        Returns
+        ---
+            swarm (numpy array) : A numpy array of shape (num_particles, num_dimensions) with random positions such that every station is placed in between two random destinations.
+        """
+        swarm = np.zeros((num_particles, num_dimensions))
+        for i in range(num_particles):
+            destination1, destination2 = np.random.choice(destinations, 2, replace=False)
+            position_multiplier = np.random.uniform(0, 1)
+            swarm[i, j] = destination1[j] * position_multiplier + destination2[j] * (1 - position_multiplier)
+        return swarm
+        
+    
     def optimize(self, num_particles, num_dimensions, num_iterations, progress = True):
         """
         Optimizes the fitness function using the PSO algorithm.
@@ -187,7 +209,7 @@ class PSO():
         
         for j in tqdm(range(num_iterations), disable = not(progress)):
             # create children of the best parents
-            children = self.crossover(swarm[0], swarm[1], num_dimensions, num_particles)
+            children = self.crossover(swarm[0], swarm[1], num_dimensions, num_particles-2)
             # mutate the children
             children = self.mutate(children, 0.1)
             swarm[2:] = children
