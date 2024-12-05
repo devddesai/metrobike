@@ -1,5 +1,6 @@
 import numpy as np
 from tqdm.notebook import tqdm
+import matplotlib.pyplot as plt
 
 class PSO():
     """Particle Swarm Optimization
@@ -34,6 +35,7 @@ class PSO():
         self.w = w
         self.c1 = c1
         self.c2 = c2
+        self.losses = []
 
     def unpacker(self, citymap, fitness):
         """
@@ -141,6 +143,7 @@ class PSO():
                     if fitness < best_global_fitness:
                         best_global_position = swarm[i]
                         best_global_fitness = fitness
+            self.losses.append(best_global_fitness)
             if j % 10 == 0 and progress:
                 print(f"Iteration {j}: Best fitness: {best_global_fitness}")
 
@@ -225,8 +228,18 @@ class PSO():
             if np.min(swarm_fitness) < best_global_fitness:
                 best_global_position = swarm[0]
                 best_global_fitness = swarm_fitness[0]
-
+            self.losses.append(best_global_fitness)
             if j % 10 == 0 and progress:
                 print(f"Iteration {j}: Best fitness: {best_global_fitness}")
 
         return best_global_position, best_global_fitness
+    
+    def plot_losses(self):
+        """
+        Plots the losses of the optimization algorithm.
+        """
+        plt.plot(self.losses)
+        plt.xlabel("Iteration")
+        plt.ylabel("Fitness")
+        plt.title("Fitness over iterations")
+        plt.show()
