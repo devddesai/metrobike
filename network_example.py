@@ -34,7 +34,7 @@ def int_vertices(s):
     """
     return np.array([[3*s, 4*s], [-3*s, 4*s], [-3*s, -4*s], [3*s, -4*s]])
 
-def basic_graph():
+def basic_graph(capacity=5):
     """
     returns a basic graph with 4 stations and 4 destinations. Both stations and destinations are located at the vertices of a rectange centered at the origin. The station rectangle has dimensions 6x8 and the destination rectangle has dimensions 12x16. The first four nodes are the stations while the last four are destinations
 
@@ -67,7 +67,7 @@ def basic_graph():
     for i in range(n_stations):
         G.add_node(i)
         G.nodes[i]['type'] = 'station'
-        G.nodes[i]['data'] = st.Station(5, 3)
+        G.nodes[i]['data'] = st.Station(capacity, 3)
     for i in range(n_stations, n_stations+n_destinations):
         G.add_node(i)
         G.nodes[i]['type'] = 'destination'
