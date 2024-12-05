@@ -94,9 +94,12 @@ class PSO():
         """
         swarm = np.zeros((num_particles, num_dimensions))
         for i in range(num_particles):
-            destination1, destination2 = np.random.choice(destinations, 2, replace=False)
-            position_multiplier = np.random.uniform(0, 1)
-            swarm[i, j] = destination1[j] * position_multiplier + destination2[j] * (1 - position_multiplier)
+            for j in range(0, num_dimensions, 2):
+                destination1 = destinations[np.random.randint(0, len(destinations))]
+                destination2 = destinations[np.random.randint(0, len(destinations))]
+                position_multiplier = np.random.uniform(0, 1)
+                swarm[i,j] = (destination1 * position_multiplier + destination2 * (1 - position_multiplier))[0]
+                swarm[i,j+1] = (destination1 * position_multiplier + destination2 * (1 - position_multiplier))[1]
         return swarm
         
     
@@ -184,7 +187,7 @@ class PSO():
                     children[i, j] += np.random.uniform(-mutation_range, mutation_range) * alpha
         return children
 
-    def optimize_genetic(self, num_particles, num_dimensions, num_iterations, progress = True):
+    def optimize_genetic(self, num_particles, num_dimensions, num_iterations, mutation_rate=0.9, alpha=0.1, progress = True):
         """
         Optimizes the fitness function using the genetic algorithm.
 
@@ -212,7 +215,7 @@ class PSO():
             # create children of the best parents
             children = self.crossover(swarm[0], swarm[1], num_dimensions, num_particles-2)
             # mutate the children
-            children = self.mutate(children, 0.1)
+            children = self.mutate(children, mutation_rate=mutation_rate, alpha=alpha)
             swarm[2:] = children
 
             swarm_fitness = np.array([self.fitness(p) for p in swarm])
