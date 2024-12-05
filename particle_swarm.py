@@ -95,8 +95,9 @@ class PSO():
         swarm = np.zeros((num_particles, num_dimensions))
         for i in range(num_particles):
             for j in range(0, num_dimensions, 2):
-                destination1 = destinations[np.random.randint(0, len(destinations))]
-                destination2 = destinations[np.random.randint(0, len(destinations))]
+                np.random.shuffle(destinations)
+                destination1 = destinations[0]
+                destination2 = destinations[1]
                 position_multiplier = np.random.uniform(0, 1)
                 swarm[i,j] = (destination1 * position_multiplier + destination2 * (1 - position_multiplier))[0]
                 swarm[i,j+1] = (destination1 * position_multiplier + destination2 * (1 - position_multiplier))[1]
