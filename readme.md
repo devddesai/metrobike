@@ -40,6 +40,7 @@
 ![Alt text](/devimages/networkexample.png)
 
 - started with all 10 bikes at station 1, but distribution of 10,000 steps is equal; shows convergence
+- equal probability distribution
 ![Alt text](/devimages/hst0.png)
 ![Alt text](/devimages/hst1.png)
 ![Alt text](/devimages/hst2.png)
@@ -47,3 +48,13 @@
 
 - here's the animation showing the convergence, very quickly the bikes leave the initial distribution, within a couple 10's of steps
 ![Alt text](/devimages/bike_distribution.gif)
+
+
+- Here's the same analysis, with bike distribution: (10, 0, 0, 0), but instead of equal weights, w = (0.7, 0.1, 0.1, 0.1)
+- Animation: 
+![Alt text](/devimages/skewbike.gif)
+- Distributions: note how, as expected due to the skewed PDF, station 0 has high traffic
+![Alt text](/devimages/skewst0.png)
+![Alt text](/devimages/skewst1.png)
+![Alt text](/devimages/skewst2.png)
+![Alt text](/devimages/skewst3.png)
