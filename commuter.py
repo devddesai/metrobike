@@ -118,8 +118,10 @@ class Commuter(Agent):
             return "no intermed"
     
     def get_all_station_info(self):
-        numword = {0: 'zero', 1: 'one', 2: 'two', 3: 'three', 4: 'four'}
-        return [str(station) + ":" +str({self.model.grid.G.nodes[station]['data'].available_bikes}) for station in self.model.stations]
+        dic = {}
+        for station in self.model.stations:
+            dic[station] = self.model.grid.G.nodes[station]['data'].available_bikes
+        return dic
 
     def bike_boolean(self):
         return self.biking

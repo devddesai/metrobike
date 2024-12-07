@@ -2,8 +2,8 @@ import numpy as np
 from tqdm.notebook import tqdm
 import matplotlib.pyplot as plt
 
-class PSO():
-    """Particle Swarm Optimization
+class Optimize():
+    """Particle Swarm Optimization & Genetic Algorithm
     
     
     Attributes:
@@ -106,7 +106,7 @@ class PSO():
         return swarm
         
     
-    def optimize(self, num_particles, num_dimensions, num_iterations, stations, progress = True):
+    def optimize_PSO(self, num_particles, num_dimensions, num_iterations, progress = True):
         """
         Optimizes the fitness function using the PSO algorithm.
 
@@ -122,8 +122,8 @@ class PSO():
             best_global_fitness (float) : The fitness value of the best position found by the algorithm.
         """
         num_dimensions*=2
-        # swarm = self.initswarm(num_particles, num_dimensions)
-        swarm = self.init_web_swarm(num_particles, num_dimensions, stations)
+        swarm = self.initswarm(num_particles, num_dimensions)
+        # swarm = self.init_web_swarm(num_particles, num_dimensions, stations)
         velocities = np.random.uniform(-(self.maxval-self.minval)*0.1, (self.maxval-self.minval)*0.1, (num_particles, num_dimensions))
         best_positions = swarm.copy()
         best_fitness = np.array([self.fitness(p) for p in swarm])
