@@ -9,19 +9,20 @@ import commuter as cm
 
 
 class MyModel(Model):
-    def __init__(self, n_agents, seed=None, G=ne.basic_graph()[0], weights = ne.basic_weights(), bike_init=None):
+    def __init__(self, n_agents, seed=None, G=ne.basic_graph()[0], destination_pos=ne.basic_graph()[1][4:], weights = ne.basic_weights(), bike_init=None):
         # Initialize the model, set up random seeds for mesa and numpy
         super().__init__(seed=seed)
         self.rng = np.random.default_rng(seed)
 
         # graph initialization and time multiplier for walking
         g = G
-        self.walking_multiplier = 10
+        self.walking_multiplier = 3
         self.grid = NetworkGrid(g)
 
         # storing all stations and destination node indices
         self.stations = pf.get_stations(self.grid.G)
         self.destinations = pf.get_destinations(self.grid.G)
+        self.destination_pos = destination_pos
 
         if bike_init is not None:
             self.assign_bikes(bike_init)
@@ -38,6 +39,7 @@ class MyModel(Model):
                              "All Station Capacity": lambda agent: agent.get_all_station_info(),
                              "Biking": lambda agent: agent.bike_boolean(),
                              "Park Failures": lambda agent: agent.park_failure(),
+                             "Trips": lambda agent: agent.num_trips
                              })
 
         # destination weights for sampling
@@ -47,7 +49,7 @@ class MyModel(Model):
         for i in range(1, n_agents + 1):
             node_id = self.random.choice(self.destinations)
             destination_node = self.sample_destination(node_id)
-            print(node_id, destination_node)
+            # print(node_id, destination_node)
             path = pf.pathfind(self.grid.G, node_id, destination_node, False, walk_multiplier=self.walking_multiplier)
             intermediate_node = path[0]
             distance_left = self.grid.G[node_id][intermediate_node]['weight'] * self.walking_multiplier
@@ -144,3 +146,9 @@ class MyModel(Model):
                     totalwalk += x[0]
                     realtime += x[1]
         return totalwalk, realtime, realtime/totalwalk
+    
+    def walking_average(self):
+        avg = 0
+        for agent in self.agents:
+            avg += agent.get_average_walking()
+        return avg/len(self.agents)

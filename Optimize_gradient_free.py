@@ -1,8 +1,9 @@
 import numpy as np
 from tqdm.notebook import tqdm
+import matplotlib.pyplot as plt
 
-class PSO():
-    """Particle Swarm Optimization
+class Optimize():
+    """Particle Swarm Optimization & Genetic Algorithm
     
     
     Attributes:
@@ -34,6 +35,7 @@ class PSO():
         self.w = w
         self.c1 = c1
         self.c2 = c2
+        self.losses = []
 
     def unpacker(self, citymap, fitness):
         """
@@ -78,7 +80,33 @@ class PSO():
         """
         return np.random.uniform(self.minval, self.maxval, (num_particles, num_dimensions))
     
-    def optimize(self, num_particles, num_dimensions, num_iterations, progress = True):
+    def init_web_swarm(self, num_particles, num_dimensions, destinations):
+        """
+        Initializes the swarm such that every station is placed in between two random destinations
+
+        Args
+        ---
+            num_particles (int) : The number of particles in the swarm.
+            num_dimensions (int) : The number of dimensions of the search space.
+            destinations (numpy array) : A numpy array of shape (num_destinations, 2) with the positions of the destinations.
+
+        Returns
+        ---
+            swarm (numpy array) : A numpy array of shape (num_particles, num_dimensions) with random positions such that every station is placed in between two random destinations.
+        """
+        swarm = np.zeros((num_particles, num_dimensions))
+        for i in range(num_particles):
+            for j in range(0, num_dimensions, 2):
+                np.random.shuffle(destinations)
+                destination1 = destinations[0]
+                destination2 = destinations[1]
+                position_multiplier = np.random.uniform(0, 1)
+                swarm[i,j] = (destination1 * position_multiplier + destination2 * (1 - position_multiplier))[0]
+                swarm[i,j+1] = (destination1 * position_multiplier + destination2 * (1 - position_multiplier))[1]
+        return swarm
+        
+    
+    def optimize_PSO(self, num_particles, num_dimensions, num_iterations, progress = True):
         """
         Optimizes the fitness function using the PSO algorithm.
 
@@ -95,6 +123,7 @@ class PSO():
         """
         num_dimensions*=2
         swarm = self.initswarm(num_particles, num_dimensions)
+        # swarm = self.init_web_swarm(num_particles, num_dimensions, stations)
         velocities = np.random.uniform(-(self.maxval-self.minval)*0.1, (self.maxval-self.minval)*0.1, (num_particles, num_dimensions))
         best_positions = swarm.copy()
         best_fitness = np.array([self.fitness(p) for p in swarm])
@@ -114,6 +143,7 @@ class PSO():
                     if fitness < best_global_fitness:
                         best_global_position = swarm[i]
                         best_global_fitness = fitness
+            self.losses.append(best_global_fitness)
             if j % 10 == 0 and progress:
                 print(f"Iteration {j}: Best fitness: {best_global_fitness}")
 
@@ -161,7 +191,7 @@ class PSO():
                     children[i, j] += np.random.uniform(-mutation_range, mutation_range) * alpha
         return children
 
-    def optimize_genetic(self, num_particles, num_dimensions, num_iterations, progress = True):
+    def optimize_genetic(self, num_particles, num_dimensions, num_iterations, mutation_rate=0.9, alpha=0.1, progress = True):
         """
         Optimizes the fitness function using the genetic algorithm.
 
@@ -187,9 +217,9 @@ class PSO():
         
         for j in tqdm(range(num_iterations), disable = not(progress)):
             # create children of the best parents
-            children = self.crossover(swarm[0], swarm[1], num_dimensions, num_particles)
+            children = self.crossover(swarm[0], swarm[1], num_dimensions, num_particles-2)
             # mutate the children
-            children = self.mutate(children, 0.1)
+            children = self.mutate(children, mutation_rate=mutation_rate, alpha=alpha)
             swarm[2:] = children
 
             swarm_fitness = np.array([self.fitness(p) for p in swarm])
@@ -198,8 +228,18 @@ class PSO():
             if np.min(swarm_fitness) < best_global_fitness:
                 best_global_position = swarm[0]
                 best_global_fitness = swarm_fitness[0]
-
+            self.losses.append(best_global_fitness)
             if j % 10 == 0 and progress:
                 print(f"Iteration {j}: Best fitness: {best_global_fitness}")
 
         return best_global_position, best_global_fitness
+    
+    def plot_losses(self):
+        """
+        Plots the losses of the optimization algorithm.
+        """
+        plt.plot(self.losses)
+        plt.xlabel("Iteration")
+        plt.ylabel("Fitness")
+        plt.title("Fitness over iterations")
+        plt.show()

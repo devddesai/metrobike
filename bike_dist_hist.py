@@ -32,4 +32,5 @@ def hist(agent_data):
         plt.title(f"Station {station} Capacity Distribution")
         plt.xlabel("Capacity")
         plt.ylabel("Counts")
+        plt.xlim(-1,11)
         plt.show()
