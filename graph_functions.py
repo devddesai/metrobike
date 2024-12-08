@@ -59,7 +59,7 @@ def normalize_coords(station_coords, destination_coords):
         sum_lat += coord[0]
         sum_lon += coord[1]
     
-    mean = (sum_lat/(len(station_coords) + len(destination_coords)), sum_lon/len(station_coords) + len(destination_coords))
+    mean = (sum_lat/(len(station_coords) + len(destination_coords)), sum_lon/(len(station_coords) + len(destination_coords)))
 
 
     #normalize the coordinates
@@ -67,10 +67,10 @@ def normalize_coords(station_coords, destination_coords):
     normalized_destination_coords = []
 
     for coord in station_coords:
-        normalized_station_coords.append(10*(coord[0] - mean[0], coord[1] - mean[1]))
+        normalized_station_coords.append((coord[0]*10000/12 - mean[0]*10000/12, coord[1]*10000/12 - mean[1]*10000/12))
     
     for coord in destination_coords:
-        normalized_destination_coords.append(10*(coord[0] - mean[0], coord[1] - mean[1]))
+        normalized_destination_coords.append((coord[0]*10000/12 - mean[0]*10000/12, coord[1]*10000/12 - mean[1]*10000/12))
     return normalized_station_coords, normalized_destination_coords
 
 def weights():
@@ -91,6 +91,9 @@ def weights():
     end_station_visits = {"Nueces & 26th":56842, "Speedway @PCL":183345,"Guad & 21st":63373, "UT West Mall @ Guad": 63044,  "Dean Keeton & Speedway":100716, "23rd & San Gabriel": 52221, "Dean Keeton & Whitis": 16679,  "21st University":183345,"22nd 1/2 Rio Grande": 15691, "23rd & San Jac @ DKR": 40974, "22nd & Pearl":50072, "28th rio grande":52104 }
 
     total_visits = sum(end_station_visits.values())
+
+
+    total_visits = 733404
 
     end_dest_probabilities = {"26th West": 56842/total_visits,
                           "McCombs": 183345/total_visits,
@@ -153,7 +156,7 @@ def create_graph_from_coordinates(stations_coords, destinations_coords):
         for j in range(i + 1, len(all_nodes)):
             G.add_edge(all_nodes[i], all_nodes[j], weight=distances[i, j])
 
-    # positions of nodes
+    #positions of nodes
     # pos = nx.get_node_attributes(G, 'pos')
 
     # node_colors = ['lightblue' if G.nodes[node]['type'] == 'station' else 'red' for node in G.nodes]
@@ -168,3 +171,28 @@ def create_graph_from_coordinates(stations_coords, destinations_coords):
     destination_nodes = {node: data for node, data in G.nodes(data=True) if data['type'] == 'destination'}
 
     return G, station_nodes, destination_nodes
+
+
+def calculate_average_edge_length(graph):
+    # Get all edge weights
+    edge_weights = [data['weight'] for _, _, data in graph.edges(data=True)]
+    
+    # Calculate the average
+    average_length = sum(edge_weights) / len(edge_weights) if edge_weights else 0
+    return average_length
+
+def calculate_minimum_edge_length(graph):
+    # Get all edge weights
+    edge_weights = [data['weight'] for _, _, data in graph.edges(data=True)]
+    
+    # Calculate the minimum
+    minimum_length = min(edge_weights) if edge_weights else None
+    return minimum_length
+
+def calculate_maximum_edge_length(graph):
+    # Get all edge weights
+    edge_weights = [data['weight'] for _, _, data in graph.edges(data=True)]
+    
+    # Calculate the minimum
+    max_length = max(edge_weights) if edge_weights else None
+    return max_length

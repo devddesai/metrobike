@@ -1,3 +1,19 @@
+### 6 stations
+![Alt text](/virenimages/destination_configuration.png "10 destination configuration")
+- this is the 10 destination configuration
+- these 10 destinations are the following UT Austin hotspots that we objectively chose as highly probable end destinations:
+- 26th West, McCombs, Target, Union Building, PMA, Union on 24th, Welch, Rise, Axis West, Rec
+
+# genetic
+![Alt text](/virenimages/genetic10x6.png "G10 destinations, 6 stations")
+- this is for 10 stations, 6 destinations. weights are determined by the count of visits to nearby metrobike stations (giving us a probability distribution for that end destination being a destination for the agent). These weights can be found in the weights() function in graphy_functions.py
+- In this graph, the reason we only see 4 stations is because 2 of these stations were placed outside of the campus/wampus boundaries we set.
+
+# PSO
+![Alt text](/virenimages/pso10x6.png "PSO 10 destinations, 6 stations")
+- this is for 10 stations, 6 destinations. weights are determined by the count of visits to nearby metrobike stations (giving us a probability distribution for that end destination being a destination for the agent). These weights can be found in the weights() function in graphy_functions.py
+- the PSO algorithm correctly placed all 6 stations within the boundaries unlike the genetic testing, but some destinations were still far from the stations.
+
 ### 4 stations
 
 ![Alt text](/devimages/4_2__0.7_0.1_.png "4 station configuration")
@@ -30,7 +46,7 @@
 # genetic
 ![Alt text](/devimages/genetic_alg_2_2.png "G2 destinations, 2 stations")
 - expected
-
+# PSO
 ![Alt text](/devimages/PSO_2_2_2weight.png "PSO 2 destinations, 2 stations")
 - expected
 
