@@ -5,11 +5,119 @@ pip install -r requirements.txt
 ```
 Then, you can take a look at the notebook `metrobike.ipynb` to see the code in action. The notebook will guide you through the process of running the simulations and visualizing the results.
 
+To run the optimizer 
+```bash
+import networkx as nx
+import pandas as pd
+
+import network_example as ne
+import graph_utils as gu
+import matplotlib.pyplot as plt
+import optimize as ogf
+import model as m
+
+# Define citymap
+citymap = [(-6, -6), (6, 6), (0, -4.5), (0, 4.5)]
+
+# Define weights - should be same length as number of destinations, weights should add up to 1
+w = [0.5, 0.5]
+
+# Define fitness
+def fitness_from_coords(coordinate_list, agents, weights, seed=1, n_steps=1000):
+    """
+    Fitness function for the optimization problem, returns the negative of the average number of trips per agent
+
+    Parameters:
+    ---
+    coordinate_list: dict
+        Dictionary containing the coordinates of the stations and destinations
+    agents: int
+        Number of agents in the model
+    weights: list
+        List of weights for the destinations
+    seed: int
+        Random seed for the model
+    n_steps: int
+        Number of steps to run the model for
+
+    Returns:
+    ---
+    float
+        Negative of the average number of trips per agent
+    """
+    destinations = coordinate_list["destination"]
+    stations = coordinate_list["station"]
+    G, s, d = gu.create_graph_from_coordinates(stations, destinations)
+    model = m.MyModel(agents, seed=seed, G=G, weights=weights)
+    for i in range(n_steps):
+        model.step()
+    return -1*model.trips_average()
+
+def fitness(agents, weights, seed=1, n_steps=1000):
+    """
+    Returns a lambda function that takes a list of coordinates and returns the fitness value. 
+    Used as the fitness function for the optimizer class since it only accepts functions with 
+    one parameter of destination coordinates
+
+    Parameters:
+    ---
+    agents: int
+        Number of agents in the model
+    weights: list
+        List of weights for the destinations
+    seed: int
+        Random seed for the model
+    n_steps: int
+        Number of steps to run the model for
+
+    Returns:
+    ---
+    lambda
+        Lambda function that takes a list of coordinates and returns the fitness value
+    """
+    return lambda x: fitness_from_coords(x, agents, weights, seed, n_steps)
+
+# Create graph for visualization
+G,s,d = gu.create_graph_from_coordinates([], citymap[2:])
+
+pos = {i: d["Destination " + str(i+1)] for i in range(len(d))}
+print(pos)
+colors = ['r' if G.nodes[i]['type'] == 'destination' else 'b' for i in G.nodes]
+nx.draw_networkx(G, {"Destination 1": [0, -4.5], "Destination 2": [0, 4.5]}, node_color = colors, with_labels=True)
+
+# Run optimizer
+optimizer = ogf.Optimize(citymap, fitness(agents=20, weights=w, seed=1, n_steps=100), w=0.7, c1=1.4, c2=1.4, mutation_rate=0.7, alpha=0.3)
+bestpos, bestfit = optimizer.optimize_PSO(20, 2, 50)
+
+## uncomment for genetic algorithm
+# bestpos, bestfit = optimizer.optimize_genetic(num_particles=20, num_dimensions=2, num_iterations=50)
+
+# Plot loss curve
+optimizer.plot_losses()
+
+print("Best solution found:", bestfit)
+stations = [(bestpos[i], bestpos[i+1]) for i in range(0, len(bestpos), 2)]
+# print(stations)
+G, s, d, = gu.create_graph_from_coordinates(stations, citymap[2:])
+
+# Plot final result
+plt.scatter([station[0] for station in stations], [station[1] for station in stations], c='red', label='Stations')
+plt.scatter([destination[0] for destination in citymap[2:]], [destination[1] for destination in citymap[2:]], c='blue', label='Destinations')
+plt.xlabel('X-Coordinate')
+plt.ylabel('Y-Coordinate')
+plt.xlim(-6, 6)
+
+plt.title('PSO: 2 stations, 2 destinations')
+plt.legend()
+# plt.savefig('PSO_2_2_2weight.png')
+plt.show()
+```
+
 ## Project Structure
 The project is structured as follows:
 - `bike_visualizations.py`: Containins the functions used to visualize the bike distributions.
 - `commuter.py`: Containins the Commuter class used as each agent in the simulation.
-- `graphy_utils.py`: Contains the functions used in the project.
+- `graph_utils.py`: Contains the functions used in the project.
 - `metrobike.ipynb`: Jupyter notebook containing the code for running the simulations and visualizing the results.
 - `model.py`: Contains the MyModel class used as the main class for the ABM simulation with the Mesa library.
 - `network_example.py`: Contains code to quickly generate and probe a toy network of destinations and stations.
