@@ -5,7 +5,7 @@ pip install -r requirements.txt
 ```
 Then, you can take a look at the notebook `metrobike.ipynb` to see the code in action. The notebook will guide you through the process of running the simulations and visualizing the results.
 
-# Quick Start
+## Quick Start
 To test the optimizer, you can copy the following code into a python file or jupyter notebook. This code will run fine on its own, but if you would like to add your own destinations, modify the `citymap ` and `weights` accordingly. Keep in mind that the first two coordinates of `citymap` are the bottom left and top right corners of a rectangle containing the region you want to allow stations to be placed, in any order.
 ```bash
 import networkx as nx
