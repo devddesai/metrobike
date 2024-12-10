@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import station as st
 
-#Sample stations (actual metrobike coordinates)
+# Sample stations (actual metrobike coordinates)
 stations_coords = [
     (30.29068, -97.74292), #Nueces & 26th
     (30.283, -97.7375), # 21st & Speedway PCL
@@ -20,60 +20,54 @@ stations_coords = [
     (30.2856, -97.7335) # 23rd San Jac @ DKR Stadium
 ]
 
-#destination points (picked out by me, subject to change)
+# destination points (picked out by me, subject to change)
 destinations_coords = [
-    (30.2910, -97.7430), #26 West
-    (30.2843, -97.7372), #McCombs
-    (30.2838, -97.7418), #Target
-    (30.2865, -97.7410), #Union Building
-    (30.2880, -97.7365), #PMA
-    (30.2890, -97.7460), #Union on 24th
+    (30.2910, -97.7430), # 26 West
+    (30.2843, -97.7372), # McCombs
+    (30.2838, -97.7418), # Target
+    (30.2865, -97.7410), # Union Building
+    (30.2880, -97.7365), # PMA
+    (30.2890, -97.7460), # Union on 24th
 
-    (30.2885, -97.7375), #Welch
-    (30.2895, -97.7425), #Rise
-    (30.2895, -97.7470), #Axis West
-    (30.2813, -97.7368), #Rec
+    (30.2885, -97.7375), # Welch
+    (30.2895, -97.7425), # Rise
+    (30.2895, -97.7470), # Axis West
+    (30.2813, -97.7368), # Rec
 ]
 
-def normalize_coords(station_coords, destination_coords):
+def normalize_coords(coords):
     """
     finds the mean of the input station and destination coordinates and normalizes them
 
     Parameters:
     ---
-    station coordinates and destination coordinates
+    coords: list of tuples
+        list of coordinates to be normalized
 
     Returns:
     ---
-    normalized_station_coords & normalized_destination_coordinates
-        normalized the coordinates and added a scale of 10000/12
+    normalized_coords: list of tuples
+        list of normalized coordinates
     """
     #find the mean of the coordinates
     sum_lat = 0
     sum_lon = 0
-    for coord in station_coords:
-        sum_lat += coord[0]
-        sum_lon += coord[1]
-
-    for coord in destination_coords:
+    for coord in coords:
         sum_lat += coord[0]
         sum_lon += coord[1]
     
-    mean = (sum_lat/(len(station_coords) + len(destination_coords)), sum_lon/(len(station_coords) + len(destination_coords)))
+    mean = (sum_lat/(len(coords) + len(coords)), sum_lon/(len(coords) + len(coords)))
 
 
     #normalize the coordinates
-    normalized_station_coords = []
-    normalized_destination_coords = []
+    normalized_coords = []
 
-    for coord in station_coords:
-        normalized_station_coords.append((coord[0]*10000/12 - mean[0]*10000/12, coord[1]*10000/12 - mean[1]*10000/12))
-    
-    for coord in destination_coords:
-        normalized_destination_coords.append((coord[0]*10000/12 - mean[0]*10000/12, coord[1]*10000/12 - mean[1]*10000/12))
-    return normalized_station_coords, normalized_destination_coords
+    for coord in coords:
+        normalized_coords.append((coord[0]*10000/12 - mean[0]*10000/12, coord[1]*10000/12 - mean[1]*10000/12))
 
-def weights():
+    return normalized_coords
+
+def ut_weights():
     """
     returns a weight vector for the graph based on probabilities at end destination.
 
@@ -111,24 +105,26 @@ def weights():
     
     return np.array(list(end_dest_probabilities.values()))
 
-#FUNC 1
-
-#station_coords and destination_coords are both a list of tuples
+# station_coords and destination_coords are both a list of tuples
 def create_graph_from_coordinates(stations_coords, destinations_coords):
     """
     creates a networkx graph with edges in between the station and destination nodes
 
     Parameters:
     ---
-    station coordinates and destination coordinates
+    station coords: list of tuples
+        list of station coordinates
+
+    destination_coords: list of tuples
+        list of destination coordinates
 
     Returns:
     ---
-    G
+    G: networkx.Graph
         the networkx graph object
-    station_nodes
+    station_nodes: dict
         a dictionary of station nodes with their positions, types (station), and datas (station class attributes)
-    destination_nodes
+    destination_nodes: dict
         a dictionary of destination nodes with their positions, types (destinations), and datas (None) 
     """
     total_nodes = np.array(stations_coords + destinations_coords)
@@ -156,24 +152,26 @@ def create_graph_from_coordinates(stations_coords, destinations_coords):
         for j in range(i + 1, len(all_nodes)):
             G.add_edge(all_nodes[i], all_nodes[j], weight=distances[i, j])
 
-    #positions of nodes
-    # pos = nx.get_node_attributes(G, 'pos')
-
-    # node_colors = ['lightblue' if G.nodes[node]['type'] == 'station' else 'red' for node in G.nodes]
-
-    # plt.figure(figsize=(10, 8))
-    # nx.draw(G, pos, with_labels=True, node_size=500, node_color=node_colors)
-    # plt.title("NetworkX Graph of Stations and End Destinations")
-    # plt.show()
-
     #create dicts for station+nodes and destination_nodes
     station_nodes = {node: data for node, data in G.nodes(data=True) if data['type'] == 'station'}
     destination_nodes = {node: data for node, data in G.nodes(data=True) if data['type'] == 'destination'}
 
     return G, station_nodes, destination_nodes
 
-
 def calculate_average_edge_length(graph):
+    """
+    Calculate the average edge length of a graph
+
+    Parameters
+    ----------
+    graph : networkx.Graph
+        The graph to calculate the average edge length of
+
+    Returns
+    -------
+    average_length : float
+        The average edge length of the graph
+    """
     # Get all edge weights
     edge_weights = [data['weight'] for _, _, data in graph.edges(data=True)]
     
@@ -182,6 +180,19 @@ def calculate_average_edge_length(graph):
     return average_length
 
 def calculate_minimum_edge_length(graph):
+    """
+    Calculate the minimum edge length of a graph
+    
+    Parameters
+    ----------
+    graph : networkx.Graph
+        The graph to calculate the minimum edge length of
+
+    Returns
+    -------
+    minimum_length : float
+        The minimum edge length of the graph
+    """
     # Get all edge weights
     edge_weights = [data['weight'] for _, _, data in graph.edges(data=True)]
     
@@ -190,6 +201,19 @@ def calculate_minimum_edge_length(graph):
     return minimum_length
 
 def calculate_maximum_edge_length(graph):
+    """
+    Calculate the maximum edge length of a graph
+
+    Parameters
+    ----------
+    graph : networkx.Graph
+        The graph to calculate the maximum edge length of
+
+    Returns
+    -------
+    max_length : float
+        The maximum edge length of the graph
+    """
     # Get all edge weights
     edge_weights = [data['weight'] for _, _, data in graph.edges(data=True)]
     

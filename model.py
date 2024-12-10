@@ -10,6 +10,25 @@ import commuter as cm
 
 class MyModel(Model):
     def __init__(self, n_agents, seed=None, G=ne.basic_graph()[0], destination_pos=ne.basic_graph()[1][4:], weights = ne.basic_weights(), bike_init=None):
+        """
+        Create a new model with the given number of agents and seed
+        
+        Parameters
+        ----------
+        n_agents : int
+            The number of agents to be created
+        seed : int
+            The seed to be used for random number generation
+        G : nx.Graph
+            The graph to be used for the model
+        destination_pos : list
+            The list of destination node indices
+        weights : list
+            The list of weights for sampling destinations
+        bike_init : dict
+            The dictionary of initial bike counts for each station
+        """
+
         # Initialize the model, set up random seeds for mesa and numpy
         super().__init__(seed=seed)
         self.rng = np.random.default_rng(seed)
@@ -147,8 +166,8 @@ class MyModel(Model):
                     realtime += x[1]
         return totalwalk, realtime, realtime/totalwalk
     
-    def walking_average(self):
+    def trips_average(self):
         avg = 0
         for agent in self.agents:
-            avg += agent.get_average_walking()
+            avg += agent.get_num_trips()
         return avg/len(self.agents)

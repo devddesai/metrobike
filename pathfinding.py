@@ -98,10 +98,6 @@ def walk_d(g, start, end, walk_multiplier=3):
     else:
         return min_bike_node, False, min_bike_cost
 
-"""
-input: graph, start node, end node, have bike boolean
-output: next node, bike there boolean, time to destination
-"""
 def pathfind(g, start, end, bike, walk_multiplier=3):
     assert g.nodes[end]['type'] == 'destination', 'end must be a destination'
     assert start != end, 'start and end cannot be the same'
