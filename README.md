@@ -84,6 +84,7 @@ pos = {i: d["Destination " + str(i+1)] for i in range(len(d))}
 print(pos)
 colors = ['r' if G.nodes[i]['type'] == 'destination' else 'b' for i in G.nodes]
 nx.draw_networkx(G, {"Destination 1": [0, -4.5], "Destination 2": [0, 4.5]}, node_color = colors, with_labels=True)
+plt.show()
 
 # Run optimizer
 optimizer = ogf.Optimize(citymap, fitness(agents=20, weights=w, seed=1, n_steps=100), w=0.7, c1=1.4, c2=1.4, mutation_rate=0.7, alpha=0.3)
