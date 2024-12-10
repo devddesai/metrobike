@@ -104,6 +104,7 @@ Additionally, we can also consider the case where the weights are not uniform. F
 
 ## 4 station, 4 destination case
 For this case, we placed four destinations in a square shape. The optimal solution is to place one station near each destination. However, both algorithms fail to find the optimal solution nearly every time and give us something like the following result:
+
 ![Alt text](/images/pso_4_4.png "PSO 4 destinations, 4 stations")
 
 This is likely due to the fact that for this case, the optimal solution is hidden behind many local minima, and the algorithms are not able to escape them. It could be possible that more aggresive methods to jump out of local minima could help for this particular case of destinations=stations.
