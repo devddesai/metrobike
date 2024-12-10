@@ -82,10 +82,8 @@ Everything needed to reproduce the results can be found in the `metrobike.ipynb`
 ## Simple 2 station, 2 destination case
 This is the simplest case we can consider. Here, the analytical solution is quite simple to find if we assume uniform weights for the destinations. The optimal positions for the station are to place them directly on top of the destinations, and both PSO and GA are able to find this solution quite easily:
 
-![Alt text](/images/PSO_2_2_2weight.png "PSO 2 destinations, 2 stations")
-![Alt text](/images/genetic_alg_2_2.png "G2 destinations, 2 stations")
-
-(Look at the $x$-axis, the GA is not so far off from the PSO solution!)
+![Alt text](/images/pso_2_2.png "PSO 2 destinations, 2 stations")
+![Alt text](/images/ga_2_2.png "G2 destinations, 2 stations")
 
 ## 4 station, 2 destination case
 For this case, we placed four destinations in a diamond shape. And destinations 2 and 1 are about twice as far away from each other than destination 3 and destination 4.
