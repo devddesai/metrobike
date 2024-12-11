@@ -127,7 +127,7 @@ The project is structured as follows:
 - `pathfinding.py`: Contains the functions used to find the shortest path (in terms of time needed) between two nodes in the network.
 - `station.py`: Contains the Station class used to represent each station in the simulation.
 ---
-# [accompanying blog post](https://hasithv.github.io/posts/projects/24-12-10-metrobike/)
+# [Accompanying blog post](https://hasithv.github.io/posts/projects/24-12-10-metrobike/)
 ---
 # Introduction
 The goal of this project is to simulate the behavior of a bike-sharing system in a network of stations and destinations, and then optimize the positions of the stations. 
