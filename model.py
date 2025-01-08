@@ -47,6 +47,7 @@ class MyModel(Model):
             self.assign_bikes(bike_init)
         
         # data collector
+        """
         self.datacollector = DataCollector(
             agent_reporters={"Position": lambda agent: agent.get_agent_position(),
                              "Distance_Left": lambda agent: agent.get_distance_left(),
@@ -60,6 +61,7 @@ class MyModel(Model):
                              "Park Failures": lambda agent: agent.park_failure(),
                              "Trips": lambda agent: agent.num_trips
                              })
+        """
 
         # destination weights for sampling
         self.destination_w = weights
@@ -77,7 +79,7 @@ class MyModel(Model):
 
             self.grid.place_agent(commuter, node_id)
             
-        self.datacollector.collect(self)
+        # self.datacollector.collect(self)
     
     def get_node(self, agent):
         """
@@ -138,9 +140,28 @@ class MyModel(Model):
             assert station in bike_counts, "All stations must be assigned a number of bikes"
             self.grid.G.nodes[station]['data'].assign_bikes(bike_counts[station])
 
+    def set_station_data(self, capacity, available_bikes):
+        """
+            Set the capacity and available bikes for each station
+
+            Parameters
+            ----------
+            capacity : dict
+                A dictionary where the keys are station indices and the values are the capacity of the station
+            available_bikes : dict
+                A dictionary where the keys are station indices and the values are the number of available bikes at the station
+
+            Returns
+            -------
+            None
+        """
+        for station in self.stations:
+            self.grid.G.nodes[station]['data'].set_station_info(capacity, available_bikes)
+
+
     def step(self):
         self.agents.shuffle_do("step")
-        self.datacollector.collect(self)
+        # self.datacollector.collect(self)
     
     def time_saved_ratio(self):
         """

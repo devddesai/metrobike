@@ -104,6 +104,27 @@ class Station():
         self.available_spots = self.capacity - num_bikes
         assert self.available_spots >= 0, "Station assign_bikes: available_spots < 0"
         assert num_bikes >= 0, "Station assign_bikes: num_bikes assigned to station must be non-negative"
+
+    def set_station_info(self, capacity, available_bikes):
+        """
+        Set the capacity and available bikes for each station
+
+        Parameters
+        ----------
+        capacity : dict
+            A dictionary where the keys are station indices and the values are the capacity of the station
+        available_bikes : dict
+            A dictionary where the keys are station indices and the values are the number of available bikes at the station
+
+        Returns
+        -------
+        None
+        """
+        self.capacity = capacity
+        self.available_bikes = available_bikes
+        self.available_spots = capacity - available_bikes
+        assert self.available_spots >= 0, "Station set_station_info: available_spots < 0"
+        assert self.capacity > 0, "Station set_station_info: capacity <= 0"
     
     def __str__(self):
         return "Station: capacity {}, available bikes {}, available spots {}".format(self.capacity, self.available_bikes, self.available_spots)

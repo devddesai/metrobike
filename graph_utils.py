@@ -5,7 +5,7 @@ import station as st
 
 # Sample stations (actual metrobike coordinates)
 stations_coords = [
-    (30.29068, -97.74292), #Nueces & 26th
+    (30.29068, -97.74292), # Nueces & 26th
     (30.283, -97.7375), # 21st & Speedway PCL
     (30.28395, -97.74198), # Guadalupe & 21st
     (30.28576, -97.74181), # UT West Mall @ Guad
